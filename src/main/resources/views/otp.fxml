@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.OTPController"
+      alignment="CENTER"
+      spacing="18"
+      style="-fx-padding: 40; -fx-background-color: white;">
+
+    <!-- TITLE: Email được gửi OTP -->
+    <Label fx:id="titleLabel"
+           text="Enter OTP"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+    <!-- OTP Input -->
+    <TextField fx:id="otpField"
+               promptText="Enter 6-digit OTP"
+               maxWidth="220"
+               style="-fx-font-size: 16px;" />
+
+    <!-- Countdown -->
+    <Label fx:id="countdownLabel"
+           text="Time left: 300s"
+           style="-fx-font-size: 14px;" />
+
+    <!-- Error Label -->
+    <Label fx:id="errorLabel"
+           text=""
+           style="-fx-text-fill: red; -fx-font-size: 14px;" />
+
+    <!-- Verify Button -->
+    <Button text="Verify OTP"
+            onAction="#handleVerify"
+            maxWidth="220"
+            style="-fx-font-size: 16px; -fx-padding: 10 20;" />
+
+    <!-- Resend OTP -->
+    <Button fx:id="resendBtn"
+            text="Resend OTP"
+            onAction="#handleResend"
+            maxWidth="220"
+            disable="true"
+            style="-fx-font-size: 14px;" />
+
+</VBox>

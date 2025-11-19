@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="12" alignment="CENTER"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.RegisterController"
+      style="-fx-padding: 40;">
+
+    <Label text="Create Account" style="-fx-font-size: 24px;"/>
+
+    <TextField fx:id="emailField" promptText="Email" />
+    <PasswordField fx:id="passwordField" promptText="Password" />
+
+    <Button text="Register" onAction="#handleRegister" />
+
+    <Label fx:id="errorLabel" textFill="red"/>
+
+    <Hyperlink text="Back to Login" onAction="#goToLogin"/>
+
+</VBox>
