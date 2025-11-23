@@ -1,0 +1,82 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21.0.2"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controller.TaskDetailsController"
+           stylesheets="@../css/mobile-main.css">
+    <BorderPane maxWidth="420" prefWidth="420" styleClass="mobile-container">
+
+        <top>
+            <BorderPane styleClass="details-top-bar">
+                <left>
+                    <Button fx:id="backButton" text="←" styleClass="back-btn"/>
+                </left>
+                <center>
+                    <Label text="Task Details" BorderPane.alignment="CENTER" styleClass="details-header"/>
+                </center>
+                <right>
+                    <Region prefWidth="32" />
+                </right>
+            </BorderPane>
+        </top>
+
+        <center>
+
+                <VBox spacing="18" styleClass="details-container">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <Label fx:id="titleLabel" styleClass="details-task-title" wrapText="true"/>
+
+                    <VBox spacing="8" styleClass="details-section">
+                        <Label text="Description" styleClass="details-section-title"/>
+                        <TextArea fx:id="descriptionArea"
+                                  editable="false"
+                                  wrapText="true"
+                                  prefRowCount="15"
+                                  styleClass="details-description"/>
+                    </VBox>
+
+                    <VBox spacing="14" styleClass="details-section">
+                        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="details-info-row">
+                            <Label text="📅" styleClass="details-info-icon"/>
+                            <VBox spacing="2">
+                                <Label text="Deadline" styleClass="details-info-label"/>
+                                <Label fx:id="dateLabel" styleClass="details-info-value"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="details-info-row">
+                            <Label text="🚩" styleClass="details-info-icon"/>
+                            <VBox spacing="2">
+                                <Label text="Priority" styleClass="details-info-label"/>
+                                <Label fx:id="priorityLabel" styleClass="details-info-value"/>
+                            </VBox>
+                        </HBox>
+                        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="details-info-row">
+                            <Label text="✓" styleClass="details-info-icon"/>
+                            <VBox spacing="2">
+                                <Label text="Status" styleClass="details-info-label"/>
+                                <Label fx:id="statusLabel" styleClass="details-info-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+        </center>
+
+        <bottom>
+            <VBox spacing="10" alignment="CENTER" styleClass="details-actions">
+                <Button fx:id="editButton" text="Edit Task" styleClass="edit-action-btn"/>
+                <Button fx:id="deleteButton" text="Delete Task" styleClass="danger-btn"/>
+            </VBox>
+        </bottom>
+    </BorderPane>
+</StackPane>

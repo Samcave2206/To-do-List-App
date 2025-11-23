@@ -1,6 +1,7 @@
 package org.example;
 
-import org.example.TaskStorage;
+//import org.example.TaskStorage;
+import org.example.model.Task;
 
 import java.util.List;
 
@@ -12,9 +13,9 @@ public class TaskManager {
         this.storage = storage;
     }
 
-    // Load luôn từ MongoDB
-    public List<Task> loadTasks() {
-        return storage.loadTasks();
+    // Load from MongoDB
+    public List<Task> loadTasks(String userEmail) {
+        return storage.loadTasks(userEmail);
     }
 
     public void addTask(Task task) {

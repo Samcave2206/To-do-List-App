@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
 import org.example.SceneManager;
+import org.example.model.User;
+import org.example.session.Session;
 import org.example.service.AuthService;
 
 public class OTPController {
@@ -19,33 +21,40 @@ public class OTPController {
     private String email;
     private AuthService auth;
 
-    private int secondsLeft = 300; // 5 minutes
+    private int secondsLeft = 300; // 5 min
     private Timeline timeline;
-
-    public void setEmail(String email) {
-        this.email = email;
-        titleLabel.setText("Enter OTP sent to: " + email);
-        startCountdown();
-    }
 
     public void initialize() {
         auth = SceneManager.getAuthService();
+        errorLabel.setText("");   // Clear old errors
     }
 
+    /**
+     * Injected from SceneManager
+     */
+    public void setEmail(String email) {
+        this.email = email;
+        titleLabel.setText(email);
+        startCountdown();
+    }
+
+    // -------------------------------------------------------------------------
+    // COUNTDOWN TIMER
+    // -------------------------------------------------------------------------
     private void startCountdown() {
         if (timeline != null) timeline.stop();
 
         resendBtn.setDisable(true);
-        countdownLabel.setText("Time left: 300s");
+        secondsLeft = 60;
 
-        secondsLeft = 300;
+        countdownLabel.setText("Resend available in 60s");
 
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             secondsLeft--;
-            countdownLabel.setText("Time left: " + secondsLeft + "s");
+            countdownLabel.setText("Resend available in " + secondsLeft + "s");
 
             if (secondsLeft <= 0) {
-                countdownLabel.setText("OTP expired. Request new OTP.");
+                countdownLabel.setText("OTP expired. Please request a new OTP.");
                 resendBtn.setDisable(false);
                 timeline.stop();
             }
@@ -55,28 +64,41 @@ public class OTPController {
         timeline.play();
     }
 
+    // -------------------------------------------------------------------------
+    // VERIFY OTP
+    // -------------------------------------------------------------------------
     @FXML
     public void handleVerify() {
         String otp = otpField.getText().trim();
+
+        if (otp.isEmpty()) {
+            errorLabel.setText("Please enter OTP.");
+            return;
+        }
 
         var result = auth.verifyOTP(email, otp);
 
         switch (result) {
 
             case SUCCESS:
-                SceneManager.switchToMainApp(email);
+                errorLabel.setText("");
+                timeline.stop();
+                User verifiedUser = auth.getUser(email);
+                Session.currentUser = verifiedUser;
+                SceneManager.switchToMain(email);
                 break;
 
             case WRONG_OTP:
-                errorLabel.setText("Wrong OTP!");
+                errorLabel.setText("Incorrect OTP!");
                 break;
 
             case EXPIRED:
-                errorLabel.setText("OTP expired!");
+                errorLabel.setText("OTP expired. Request a new one.");
+                resendBtn.setDisable(false);
                 break;
 
             case NO_SUCH_USER:
-                errorLabel.setText("No pending OTP found. Please register again.");
+                errorLabel.setText("No OTP found. Please register again.");
                 break;
 
             default:
@@ -85,6 +107,9 @@ public class OTPController {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // RESEND OTP
+    // -------------------------------------------------------------------------
     @FXML
     public void handleResend() {
 
@@ -95,16 +120,16 @@ public class OTPController {
         switch (result) {
 
             case SUCCESS:
-                errorLabel.setText("OTP sent!");
+                errorLabel.setText("A new OTP has been sent!");
                 startCountdown();
+                break;
+
+            case NO_USER:
+                errorLabel.setText("User not found. Please register again.");
                 break;
 
             case ALREADY_VERIFIED:
                 errorLabel.setText("Email already verified.");
-                break;
-
-            case NO_USER:
-                errorLabel.setText("No pending user found.");
                 break;
 
             default:
@@ -112,5 +137,10 @@ public class OTPController {
                 resendBtn.setDisable(false);
                 break;
         }
+    }
+
+    @FXML
+    private void handleBack() {
+        SceneManager.switchToRegister();
     }
 }

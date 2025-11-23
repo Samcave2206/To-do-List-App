@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21.0.2"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controller.EditTaskController"
+           stylesheets="@../css/mobile-main.css">
+
+    <fx:define>
+        <ToggleGroup fx:id="priorityToggleGroup"/>
+    </fx:define>
+
+    <BorderPane maxWidth="420" prefWidth="420" styleClass="mobile-container">
+
+        <top>
+            <BorderPane styleClass="edit-top-bar">
+                <left>
+                    <Button fx:id="closeButton" text="✕" styleClass="back-btn"/>
+                </left>
+                <center>
+                    <Label text="Edit Task" BorderPane.alignment="CENTER" styleClass="details-header"/>
+                </center>
+                <right>
+                    <Label text=" " />
+                </right>
+            </BorderPane>
+        </top>
+
+        <center>
+            
+                <VBox spacing="16" styleClass="edit-form">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <Label text="Task Name" styleClass="edit-label"/>
+                    <TextField fx:id="titleField" styleClass="edit-field"/>
+
+                    <Label text="Description" styleClass="edit-label"/>
+                    <TextArea fx:id="descriptionField" prefRowCount="10" wrapText="true" styleClass="edit-area"/>
+
+                    <Label text="Deadline" styleClass="edit-label"/>
+                    <DatePicker fx:id="dueDatePicker" styleClass="edit-field"/>
+
+                    <Label text="Priority" styleClass="edit-label"/>
+                    <HBox spacing="10" styleClass="priority-toggle-group">
+                        <ToggleButton fx:id="highPriorityBtn"
+                                      text="High"
+                                      toggleGroup="$priorityToggleGroup"
+                                      styleClass="priority-toggle-high"/>
+                        <ToggleButton fx:id="mediumPriorityBtn"
+                                      text="Medium"
+                                      toggleGroup="$priorityToggleGroup"
+                                      styleClass="priority-toggle-medium"/>
+                        <ToggleButton fx:id="lowPriorityBtn"
+                                      text="Low"
+                                      toggleGroup="$priorityToggleGroup"
+                                      styleClass="priority-toggle-low"/>
+                    </HBox>
+
+                    <Label text="Status" styleClass="edit-label"/>
+                    <ComboBox fx:id="statusCombo" styleClass="status-combo"/>
+                </VBox>
+
+        </center>
+
+        <bottom>
+            <HBox spacing="12" alignment="CENTER" styleClass="edit-actions">
+                <Button fx:id="cancelButton" text="Cancel" styleClass="secondary-action-btn"/>
+                <Button fx:id="saveButton" text="Save Changes" styleClass="primary-action-btn"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+</StackPane>
