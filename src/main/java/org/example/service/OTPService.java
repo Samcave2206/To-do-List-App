@@ -22,21 +22,10 @@ public class OTPService {
 
 
             String subject = "Your Verification Code";
-            String content =
-                    "Your OTP code is: " + otp +
-                            "\nThis code will expire in 5 minutes.";
+            String content = "Your OTP code is: " + otp +
+                             "\nThis code will expire in 1 minutes.";
 
             emailService.sendEmail(email, subject, content);
-            try {
-                emailService.sendEmail(email,
-                        "Your Verification Code",
-                        content
-                );
-                System.out.println("EMAIL SENT");
-            } catch(Exception e) {
-                System.out.println("EMAIL SEND FAILED");
-                e.printStackTrace();
-            }
             return true;
 
         } catch (Exception e) {

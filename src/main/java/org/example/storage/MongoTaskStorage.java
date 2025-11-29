@@ -1,10 +1,11 @@
-package org.example;
+package org.example.storage;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.example.TaskStorage;
+import org.example.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,15 @@ public class MongoTaskStorage implements TaskStorage {
     }
 
     @Override
-    public List<Task> loadTasks() {
+    public List<Task> loadTasks(String userEmail) {
         List<Task> tasks = new ArrayList<>();
-        for (Document doc : collection.find()) {
+        Iterable<Document> docs;
+        if (userEmail == null || userEmail.isBlank()) {
+            docs = collection.find();
+        } else {
+            docs = collection.find(eq("userEmail", userEmail.toLowerCase()));
+        }
+        for (Document doc : docs) {
             tasks.add(Task.fromDocument(doc));
         }
         return tasks;
@@ -34,7 +41,10 @@ public class MongoTaskStorage implements TaskStorage {
 
     @Override
     public void updateTask(Task task) {
-        collection.replaceOne(eq("_id", task.getId()), task.toDocument());
+        if (task.getId() == null || !ObjectId.isValid(task.getId())) {
+            throw new IllegalArgumentException("Task id is invalid or missing");
+        }
+        collection.replaceOne(eq("_id", new ObjectId(task.getId())), task.toDocument());
     }
 
     @Override

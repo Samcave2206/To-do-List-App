@@ -1,20 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12" alignment="CENTER"
-      fx:controller="org.example.controller.LoginController"
-      xmlns:fx="http://javafx.com/fxml">
+<StackPane xmlns="http://javafx.com/javafx/21.0.2"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controller.LoginController"
+           stylesheets="@../css/mobile-main.css">
 
-    <Label text="Login" style="-fx-font-size: 24px;" />
+    <BorderPane maxWidth="375" prefWidth="375" styleClass="mobile-container">
+        <center>
+            <VBox spacing="18" alignment="TOP_CENTER" styleClass="login-card">
+                <padding>
+                    <Insets top="30" right="32" bottom="30" left="32"/>
+                </padding>
 
-    <TextField fx:id="emailField" promptText="Email" />
-    <PasswordField fx:id="passwordField" promptText="Password" />
+                <StackPane alignment="TOP_CENTER" styleClass="login-badge"
+                           prefWidth="30" prefHeight="30"
+                           maxWidth="30" maxHeight="30">
+                    <Label text="✓" styleClass="login-badge-icon"/>
+                </StackPane>
 
-    <Button text="Login" onAction="#handleLogin" />
+                <Label text="Welcome to To-do List App!" styleClass="login-title"/>
+                <Label text="Log in to your account to continue." styleClass="login-subtitle"/>
 
-    <Label fx:id="errorLabel" textFill="red" />
+                <VBox spacing="16" styleClass="login-form">
+                    <Label text="Email" styleClass="login-field-label"/>
+                    <TextField fx:id="emailField"
+                               promptText="Enter your email"
+                               styleClass="login-input"/>
 
-    <Hyperlink text="Create new account" onAction="#goToRegister"/>
-</VBox>
+                    <Label text="Password" styleClass="login-field-label"/>
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Enter your password"
+                                   styleClass="login-input"/>
+
+                    <Hyperlink text="Forgot Password?" styleClass="login-forgot-link"/>
+                </VBox>
+
+                <Button text="Log In"
+                        styleClass="login-primary-btn"
+                        onAction="#handleLogin"
+                        maxWidth="Infinity"/>
+
+                <Label fx:id="errorLabel" styleClass="login-error"/>
+
+                <HBox alignment="CENTER" spacing="8" styleClass="login-separator">
+                    <Separator prefWidth="80"/>
+                    <Label text="or" styleClass="login-separator-text"/>
+                    <Separator prefWidth="80"/>
+                </HBox>
+
+                <VBox spacing="10" alignment="CENTER" styleClass="login-social">
+                    <Button text="Log in with Google" styleClass="social-btn"/>
+                    <Button text="Log in with Apple" styleClass="social-btn"/>
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Don't have an account?" styleClass="login-subtitle"/>
+                    <Hyperlink text="Sign Up" onAction="#goToRegister" styleClass="login-signup"/>
+                </HBox>
+            </VBox>
+        </center>
+    </BorderPane>
+
+</StackPane>

@@ -7,42 +7,59 @@ import org.example.service.AuthService;
 
 public class RegisterController {
 
+    @FXML private TextField nameField;
+
     @FXML private TextField emailField;
+
     @FXML private PasswordField passwordField;
-    @FXML private Label errorLabel;
 
-    private AuthService auth;
+    @FXML private PasswordField confirmPasswordField;
 
-    public void initialize() {
-        this.auth = SceneManager.getAuthService();
-    }
+    private final AuthService auth = SceneManager.getAuthService();
 
     @FXML
-    public void handleRegister() {
+    private void handleRegister() {
 
+        String name = nameField.getText();
         String email = emailField.getText();
-        String pw = passwordField.getText();
+        String pass = passwordField.getText();
+        String confirm = confirmPasswordField.getText();
 
-        var result = auth.register(email, pw);
+        if (name.isEmpty() || email.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+            showAlert("Please fill in all fields.");
+            return;
+        }
 
-        switch (result) {
+        if (!pass.equals(confirm)) {
+            showAlert("Passwords do not match!");
+            return;
+        }
+
+        var created = auth.register(name, email, pass);
+
+        switch (created) {
             case SUCCESS:
-                errorLabel.setText("");
+                showAlert("");
                 SceneManager.switchToOTP(email);
                 break;
 
             case EMAIL_EXISTS:
-                errorLabel.setText("Email already exists.");
+                showAlert("Email already exists.");
+                SceneManager.switchToLogin();
                 break;
 
             case FAILED_TO_SEND_OTP:
-                errorLabel.setText("Error sending OTP. Try again.");
+                showAlert("Error sending OTP. Try again.");
                 break;
         }
     }
 
     @FXML
-    public void goToLogin() {
+    private void goToLogin() {
         SceneManager.switchToLogin();
+    }
+
+    private void showAlert(String msg) {
+        new Alert(Alert.AlertType.WARNING, msg).show();
     }
 }

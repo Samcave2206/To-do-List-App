@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<HBox xmlns="http://javafx.com/javafx/21.0.2"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.TaskCardController"
+      alignment="CENTER_LEFT"
+      spacing="12"
+      styleClass="task-card"
+      onMouseClicked="#handleCardClick">
+
+    <!-- Checkbox / Completion indicator -->
+    <StackPane fx:id="statusContainer"
+               onMouseClicked="#handleStatusClick"
+               pickOnBounds="true">
+        <HBox.margin>
+            <Insets right="10"/>
+        </HBox.margin>
+        <Circle fx:id="statusCircle" radius="12" styleClass="status-circle"/>
+        <Label fx:id="statusCheck" text="✓" visible="false" styleClass="status-check"/>
+    </StackPane>
+
+    <!-- Task Info -->
+    <VBox>
+        <Label fx:id="taskTitle" styleClass="task-title"/>
+        <HBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="📅" styleClass="task-date-icon"/>
+            <Label fx:id="dueDateLabel" styleClass="task-date"/>
+        </HBox>
+    </VBox>
+
+    <Pane HBox.hgrow="ALWAYS"/>
+
+    <!-- Priority Flag -->
+    <Label fx:id="priorityFlag" styleClass="priority-flag"/>
+
+</HBox>

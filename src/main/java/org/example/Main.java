@@ -8,11 +8,13 @@ import javafx.stage.Stage;
 import org.example.service.AuthService;
 import org.example.service.EmailService;
 import org.example.service.OTPService;
+import org.example.storage.MongoTaskStorage;
 import org.example.storage.MongoUserStorage;
 import io.github.cdimascio.dotenv.Dotenv;
 
 
-
+// compile: mvn clean compile
+// run: mvn javafx:run   
 
 public class Main extends Application {
     Dotenv dotenv = Dotenv.load();
@@ -20,21 +22,23 @@ public class Main extends Application {
     String apiKey = dotenv.get("API_KEY");
     String appPassword = dotenv.get("APP_PASSWORD");
     String fromEmail = dotenv.get("FROM_EMAIL");
+    String mongoURL = dotenv.get("MONGO_URL");
 
     @Override
     public void start(Stage stage) throws Exception {
 
         // 1) Kết nối MongoDB
-        MongoClient client = MongoClients.create("mongodb://localhost:27017");
+        MongoClient client = MongoClients.create(mongoURL);
         MongoDatabase db = client.getDatabase("todoapp");
-// Cực kỳ cẩn thận với crash, đọc collection liên tục
+        // Cực kỳ cẩn thận với crash, đọc collection liên tục
         MongoUserStorage userStorage = new MongoUserStorage(db);
-
+        // Task storage
+        MongoTaskStorage taskStorage = new MongoTaskStorage(db);
+        
         // 3) Email Service (Gmail + App Password)
         EmailService emailService = new EmailService(
                 fromEmail,
                 appPassword //không được up thẳng lên gittt
-
         );
 
         //OTP Service - EmailService)
@@ -44,7 +48,7 @@ public class Main extends Application {
         AuthService authService = new AuthService(userStorage, otpService);
 
         // Scene manager -> dễ crash
-        SceneManager.init(stage, authService);
+        SceneManager.init(stage, authService, taskStorage);
 
         SceneManager.switchToLogin();
 

@@ -15,11 +15,12 @@ public class MongoUserStorage {
         this.users = db.getCollection("users");
     }
 
-    public boolean createUser(String email, String passwordHash) {
+    public boolean createUser(String name, String email, String passwordHash) {
         Document existing = users.find(Filters.eq("email", email)).first();
         if (existing != null) return false;
 
         Document doc = new Document()
+                .append("name", name)
                 .append("email", email)
                 .append("passwordHash", passwordHash)
                 .append("emailVerified", false)

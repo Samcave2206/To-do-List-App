@@ -1,10 +1,14 @@
 package org.example.service;
 
 import org.bson.Document;
+import org.example.model.User;
 import org.example.storage.MongoUserStorage;
 
+//import com.mongodb.client.model.Filters;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class AuthService {
 
@@ -16,40 +20,62 @@ public class AuthService {
         this.otpService = otpService;
     }
 
+    // -------------------------------------------------------------------------
+    // PASSWORD HASHING (SHA-256)
+    // -------------------------------------------------------------------------
     private String hashPassword(String raw) {
-        return Integer.toHexString(Objects.hash(raw));
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encoded = digest.digest(raw.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : encoded) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // fallback
+            return Integer.toHexString(raw.hashCode());
+        }
     }
 
+    // -------------------------------------------------------------------------
     // REGISTER
+    // -------------------------------------------------------------------------
     public enum RegisterResult {
         SUCCESS,
         EMAIL_EXISTS,
         FAILED_TO_SEND_OTP
     }
 
-    public RegisterResult register(String email, String password) {
+    public RegisterResult register(String name, String email, String password) {
 
         Document existing = userStorage.getUser(email);
-        if (existing != null) return RegisterResult.EMAIL_EXISTS;
+        if (existing != null)
+            return RegisterResult.EMAIL_EXISTS;
 
-        // Create user first (emailVerified=false)
-        boolean created = userStorage.createUser(email, hashPassword(password));
-        if (!created) return RegisterResult.EMAIL_EXISTS;
+        boolean created = userStorage.createUser(
+                name,
+                email,
+                hashPassword(password)
+        );
 
-        // Generate OTP
+        if (!created)
+            return RegisterResult.EMAIL_EXISTS;
+
+        // generate OTP
         String otp = otpService.generateOTP();
 
-        // Send email
+        // attempt email sending
         if (!otpService.sendOTP(email, otp))
             return RegisterResult.FAILED_TO_SEND_OTP;
-        //Nếu còn lỗi thì có nên tạo thêm collection?
 
-        userStorage.saveOTP(email, otp, LocalDateTime.now().plusMinutes(5));
+        // save OTP with expiration
+        userStorage.saveOTP(email, otp, LocalDateTime.now().plusMinutes(1));
 
         return RegisterResult.SUCCESS;
     }
 
-    // VERIFY
+    // -------------------------------------------------------------------------
+    // VERIFY OTP
+    // -------------------------------------------------------------------------
     public enum VerifyResult {
         SUCCESS,
         WRONG_OTP,
@@ -63,28 +89,28 @@ public class AuthService {
         if (user == null)
             return VerifyResult.NO_SUCH_USER;
 
-        String correct = user.getString("otp");
+        String storedOtp = user.getString("otp");
         LocalDateTime expire = userStorage.getOTPExpire(email);
 
-        if (correct == null || expire == null)
+        if (storedOtp == null || expire == null)
             return VerifyResult.WRONG_OTP;
 
         if (LocalDateTime.now().isAfter(expire))
             return VerifyResult.EXPIRED;
 
-        if (!correct.equals(inputOtp))
+        if (!storedOtp.equals(inputOtp))
             return VerifyResult.WRONG_OTP;
 
+        // success
         userStorage.setEmailVerified(email);
         userStorage.clearOTP(email);
-        System.out.println(">>> stored otp = " + correct);
-        System.out.println(">>> input otp = " + inputOtp);
-
 
         return VerifyResult.SUCCESS;
     }
- //Chưa test được logic nhưng mà UI có vấn đề, phải kiểm tra lại, hoặc là xoá luôn nó đi để tránh tạo thêm việc
+
+    // -------------------------------------------------------------------------
     // RESEND OTP
+    // -------------------------------------------------------------------------
     public enum ResendResult {
         SUCCESS,
         FAILED,
@@ -95,19 +121,26 @@ public class AuthService {
     public ResendResult resendOTP(String email) {
 
         Document user = userStorage.getUser(email);
-        if (user == null) return ResendResult.NO_USER;
+        if (user == null)
+            return ResendResult.NO_USER;
 
         boolean verified = user.getBoolean("emailVerified", false);
-        if (verified) return ResendResult.ALREADY_VERIFIED;
+        if (verified)
+            return ResendResult.ALREADY_VERIFIED;
 
-        String otp = otpService.generateOTP();
-        if (!otpService.sendOTP(email, otp)) return ResendResult.FAILED;
+        String newOTP = otpService.generateOTP();
 
-        userStorage.saveOTP(email, otp, LocalDateTime.now().plusMinutes(5));
+        if (!otpService.sendOTP(email, newOTP))
+            return ResendResult.FAILED;
+
+        userStorage.saveOTP(email, newOTP, LocalDateTime.now().plusMinutes(5));
+
         return ResendResult.SUCCESS;
     }
 
-    // LOGIN: mới test thử trước khi tạo AI generator, sau đó chưa thử, phải thử lại.
+    // -------------------------------------------------------------------------
+    // LOGIN
+    // -------------------------------------------------------------------------
     public enum LoginResult {
         SUCCESS,
         WRONG_PASSWORD,
@@ -117,15 +150,41 @@ public class AuthService {
 
     public LoginResult login(String email, String password) {
 
-        Document user = userStorage.getUser(email);
-        if (user == null) return LoginResult.USER_NOT_FOUND;
+        // normalize email to match storage (emails are stored lower-case)
+        String normalizedEmail = email == null ? null : email.toLowerCase();
 
-        if (!userStorage.isEmailVerified(email))
+        Document user = userStorage.getUser(normalizedEmail);
+        if (user == null)
+            return LoginResult.USER_NOT_FOUND;
+
+        boolean verified = userStorage.isEmailVerified(normalizedEmail);
+        if (!verified)
             return LoginResult.EMAIL_NOT_VERIFIED;
 
         String hashed = hashPassword(password);
-        return userStorage.checkPassword(email, hashed)
-                ? LoginResult.SUCCESS
-                : LoginResult.WRONG_PASSWORD;
+
+        boolean ok = userStorage.checkPassword(normalizedEmail, hashed);
+        return ok ? LoginResult.SUCCESS : LoginResult.WRONG_PASSWORD;
     }
+
+    // ========================================================================
+    //  GET USER MODEL (Optional)
+    // ========================================================================
+
+    public User getUser(String email) {
+        Document doc = userStorage.getUser(email.toLowerCase());
+
+        if (doc == null) return null;
+
+        User user = new User();
+        user.setId(doc.getObjectId("_id").toString());
+        user.setName(doc.getString("name"));
+        user.setEmail(doc.getString("email"));
+        user.setPassword(doc.getString("password"));
+        user.setVerified(doc.getBoolean("verified", false));
+        user.setOtp(doc.getString("otp"));
+
+        return user;
+    }
+
 }

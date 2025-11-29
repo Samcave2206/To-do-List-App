@@ -36,7 +36,7 @@ public class EmailService {
 
     public void sendEmail(String to, String subject, String content) throws Exception {
 
-        // Tạo message
+        // Create message
         Message message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(fromEmail, "ToDo App"));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));

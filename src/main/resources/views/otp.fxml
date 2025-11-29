@@ -4,48 +4,62 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.controller.OTPController"
-      alignment="CENTER"
-      spacing="18"
-      style="-fx-padding: 40; -fx-background-color: white;">
+<StackPane xmlns="http://javafx.com/javafx/21.0.2"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controller.OTPController"
+           stylesheets="@../css/mobile-main.css">
 
-    <!-- TITLE: Email được gửi OTP -->
-    <Label fx:id="titleLabel"
-           text="Enter OTP"
-           style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+    <BorderPane maxWidth="375" prefWidth="375" styleClass="mobile-container">
+        <center>
+            <VBox spacing="18" styleClass="otp-card">
+                <padding>
+                    <Insets top="30" right="32" bottom="30" left="32"/>
+                </padding>
 
-    <!-- OTP Input -->
-    <TextField fx:id="otpField"
-               promptText="Enter 6-digit OTP"
-               maxWidth="220"
-               style="-fx-font-size: 16px;" />
+                <StackPane styleClass="otp-header" prefHeight="50">
+                    <Button text="←"
+                        styleClass="back-btn"
+                        onAction="#handleBack"
+                        StackPane.alignment="CENTER_LEFT"
+                        translateX="10"/>
+                    <Label text="Verify Your Account"
+                        styleClass="otp-title"
+                        StackPane.alignment="CENTER"/>
+                </StackPane>
 
-    <!-- Countdown -->
-    <Label fx:id="countdownLabel"
-           text="Time left: 300s"
-           style="-fx-font-size: 14px;" />
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Enter the 6-digit code sent to your email" styleClass="otp-instruction"/>
+                    <Label fx:id="titleLabel" styleClass="otp-email"/>
+                </VBox>
 
-    <!-- Error Label -->
-    <Label fx:id="errorLabel"
-           text=""
-           style="-fx-text-fill: red; -fx-font-size: 14px;" />
+                <TextField fx:id="otpField"
+                           promptText="_ _ _ _ _ _"
+                           styleClass="otp-input"
+                           maxWidth="240"/>
 
-    <!-- Verify Button -->
-    <Button text="Verify OTP"
-            onAction="#handleVerify"
-            maxWidth="220"
-            style="-fx-font-size: 16px; -fx-padding: 10 20;" />
+                <Label fx:id="errorLabel" styleClass="otp-error"/>
 
-    <!-- Resend OTP -->
-    <Button fx:id="resendBtn"
-            text="Resend OTP"
-            onAction="#handleResend"
-            maxWidth="220"
-            disable="true"
-            style="-fx-font-size: 14px;" />
+                <Label fx:id="countdownLabel" styleClass="otp-countdown"/>
 
-</VBox>
+                <Button text="Verify"
+                        styleClass="register-primary-btn"
+                        onAction="#handleVerify"
+                        maxWidth="Infinity"/>
+
+                <HBox alignment="CENTER" spacing="6">
+                    <Label text="Didn't receive a code?" styleClass="otp-instruction"/>
+                    <Button fx:id="resendBtn"
+                            text="Resend"
+                            styleClass="otp-resend"
+                            onAction="#handleResend"
+                            disable="true"/>
+                </HBox>
+            </VBox>
+        </center>
+    </BorderPane>
+</StackPane>

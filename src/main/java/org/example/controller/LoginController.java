@@ -3,6 +3,8 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.SceneManager;
+import org.example.model.User;
+import org.example.session.Session;
 import org.example.service.AuthService;
 
 public class LoginController {
@@ -15,12 +17,18 @@ public class LoginController {
 
     public void initialize() {
         this.auth = SceneManager.getAuthService();
+        errorLabel.setText("");
     }
 
     @FXML
     public void handleLogin() {
-        String email = emailField.getText();
-        String pw = passwordField.getText();
+        String email = emailField.getText().trim().toLowerCase();
+        String pw = passwordField.getText().trim();
+
+        if (email.isEmpty() || pw.isEmpty()) {
+            errorLabel.setText("Please fill in all fields.");
+            return;
+        }
 
         var result = auth.login(email, pw);
 
@@ -28,12 +36,14 @@ public class LoginController {
 
             case SUCCESS:
                 errorLabel.setText("");
-                SceneManager.switchToMainApp(email);
+                User loggedIn = auth.getUser(email);
+                Session.currentUser = loggedIn;
+                javafx.application.Platform.runLater(() -> SceneManager.switchToMain(email));
                 break;
 
             case EMAIL_NOT_VERIFIED:
-                errorLabel.setText("Email not verified. Please enter OTP.");
-                SceneManager.switchToOTP(email);
+                errorLabel.setText("Email not verified. Enter OTP.");
+                javafx.application.Platform.runLater(() -> SceneManager.switchToOTP(email));
                 break;
 
             case WRONG_PASSWORD:
@@ -42,6 +52,10 @@ public class LoginController {
 
             case USER_NOT_FOUND:
                 errorLabel.setText("Account does not exist.");
+                break;
+
+            default:
+                errorLabel.setText("Login failed.");
                 break;
         }
     }

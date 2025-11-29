@@ -1,11 +1,12 @@
 package org.example;
 
-import org.example.Task;
 import java.util.List;
 
+import org.example.model.Task;
+
 public interface TaskStorage {
-    List<Task> loadTasks();
+    List<Task> loadTasks(String userEmail);
     void addTask(Task task);
     void updateTask(Task task);
-    void deleteTask(String id);  // dùng _id để xoá
+    void deleteTask(String id);  // use _id to delete
 }

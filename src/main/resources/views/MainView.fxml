@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane xmlns="http://javafx.com/javafx/21.0.2"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controller.MainController"
+           stylesheets="@../css/mobile-main.css">
+
+    <!-- Background -->
+    <Pane StackPane.alignment="CENTER" styleClass="app-background"
+          prefWidth="375" prefHeight="750" />
+
+    <!-- MAIN CONTENT -->
+    <BorderPane maxWidth="375" prefWidth="375" styleClass="mobile-container">
+
+        <!-- TOP BAR -->
+        <top>
+            <BorderPane styleClass="top-bar">
+                <left>
+                    <MenuButton fx:id="menuButton" text="☰" BorderPane.alignment="CENTER_LEFT" styleClass="icon-btn">
+                        <items>
+                            <MenuItem text="User Profile" onAction="#handleProfile" styleClass="menu-item"/>
+                            <MenuItem text="Log out" onAction="#handleLogout" styleClass="menu-item"/>
+                        </items>
+                    </MenuButton>
+                </left>
+                <center>
+                    <Label text="My Tasks"
+                           BorderPane.alignment="CENTER"
+                           styleClass="title"
+                           style="-fx-font-size:20; -fx-font-weight:700;"/>
+                </center>
+                <right>
+                    <Label fx:id="greetingLabel" text="Hello"
+                           BorderPane.alignment="CENTER_RIGHT"
+                           style="-fx-font-size:14; -fx-font-weight:600;"/>
+                </right>
+            </BorderPane>
+        </top>
+
+        <!-- CENTER — TASK LIST -->
+        <center>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll">
+                <VBox spacing="20" styleClass="task-list">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+
+
+                    <!-- Filters -->
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button text="Sort By Deadline" fx:id="filterDeadlineBtn" styleClass="filter-btn"/>
+                        <Button text="Sort By Priority" fx:id="filterPriorityBtn" styleClass="filter-btn"/>
+                    </HBox>
+
+                    <!-- Active Task List -->
+                    <Label text="Active" styleClass="completed-label"/>
+                    <VBox spacing="10" fx:id="activeTaskContainer"/>
+
+                    <!-- Completed Section -->
+                    <Label text="Completed" styleClass="completed-label"/>
+
+                    <VBox spacing="10" fx:id="completedTaskContainer"/>
+
+                </VBox>
+            </ScrollPane>
+        </center>
+
+    </BorderPane>
+
+    <!-- FLOATING ACTION BUTTON (ADD TASK) -->
+    <Button fx:id="addTaskBtn" text="+" styleClass="fab"/>
+
+</StackPane>
